@@ -1,9 +1,14 @@
 <template>
   <div class="home">
     <h1>BPMN Lint Analyzer</h1>
+    <!-- Get File from DropZone -->
     <DropZone @drop.prevent="drop" @change="selectedFile"/>
     <span class="file-info">File:{{dropzoneFile.name}}</span>
-    <button @click="sendFile">Upload File</button>
+    <button @click="sendFile" >Upload File</button>
+    <!-- Display Response Data (Not Working)-->
+    <div v-if="responseData">
+      <p>Testing: {{responseData}}</p>
+    </div>
   </div>
 </template>
 
@@ -20,26 +25,20 @@ export default {
   setup(){
     let dropzoneFile = ref("")
 
+    //Define Response variable and visibility toggle
+    const responseData = ref(null)
+
+    //Methods
     const drop = (e) => {
       dropzoneFile.value = e.dataTransfer.files[0]
     }
     const selectedFile = () => {
       dropzoneFile.value = document.querySelector('.dropzoneFile').files[0]
     }
+
+    //API Call
     const sendFile = () => {
       
-      // const formData = new FormData()
-      // console.log(formData)
-      // formData.append('file', dropzoneFile.value)
-      // formData.append('message', 'Hello World')
-      // fetch('http://localhost:3000/fileupload',{
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type':'multipart/form-data'
-      //   },
-      //   body: formData
-      // }).catch((error) => ("something is fucky wucky",error))
-
       let formData = new FormData()
       formData.append('file', dropzoneFile.value)
 
@@ -50,11 +49,12 @@ export default {
         }
       }).catch(error => {
         console.log(error)
+      }).then(response => {
+        responseData.value = response.data
+        console.log(responseData);
       })
-
     }
-    
-    return{dropzoneFile, drop, selectedFile, sendFile}
+    return{dropzoneFile, drop, selectedFile, sendFile, responseData}
   }
 }
 </script>
