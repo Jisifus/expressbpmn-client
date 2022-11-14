@@ -37,14 +37,14 @@ export default {
   justify-content: center;
   align-items: center;
   row-gap: 16px;
-  border: 2px dashed #41b883;
+  border: 2px dashed rgb(155, 216, 85);
   background: white;
   transition: .3s ease all;
 
   label{
     padding: 8px 12px;
     color: white;
-    background-color: #41b883;
+    background-color: rgb(155, 216, 85);
     transition: .3s ease all;
     cursor: pointer;
     border-radius: 10px;
@@ -57,10 +57,10 @@ input{
 .active-dropzone{
   color: white;
   border-color: white;
-  background-color: #41b883;
+  background-color: rgb(155, 216, 85);
 
   label{
-    background-color: #41b883;
+    background-color: rgb(155, 216, 85);
     color: white;
     margin: 0 10px;
     padding: 10px;

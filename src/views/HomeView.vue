@@ -3,15 +3,16 @@
     <h1>BPMN Linter</h1>
     <!-- Get File from DropZone -->
     <DropZone @drop.prevent="drop" @change="selectedFile"/>
-    <span v-if="dropzoneFile.name" class="file-info">File:{{dropzoneFile.name}}</span>
-    <button @click="sendFile" >Upload File</button>
+    <span v-if="dropzoneFile.name" class="file-info">File: {{dropzoneFile.name}}</span>
+    <span v-if="dropzoneFile.name" @click="removeFile" class="removeFile">❌</span>
+    
+    <label @click="sendFile" v-if="dropzoneFile.name" >Upload File</label>
     <!-- Display Response Data (Not Working)-->
     <div v-if="responseData">
-      <ul>
-        <li v-for="item in responseData" :key="item.id" class="results">
-          {{item}}
-        </li>
-      </ul>
+      <div v-for="test in arr" v-bind:key="test.id" class="results">
+        <p v-if="test[1]==='error'" class="bpmnerror">❌ {{test[1].toUpperCase()}}: {{test[2]}} (At: {{test[0]}})</p>
+        <p v-if="test[1]==='warning'" class="bpmnwarning">⚠️ {{test[1].toUpperCase()}}: {{test[2]}} (At: {{test[0]}})</p>
+      </div>
     </div>
   </div>
 </template>
@@ -30,7 +31,9 @@ export default {
     let dropzoneFile = ref("")
 
     //Define Response variable and visibility toggle
-    var responseData = ref(null)
+    const responseData = ref(null)
+    const arr = ref(null)
+
 
     //Methods
     const drop = (e) => {
@@ -40,21 +43,15 @@ export default {
       dropzoneFile.value = document.querySelector('.dropzoneFile').files[0]
     }
 
+    const removeFile = () => {
+      dropzoneFile.value = null
+    }
+
     //API Call
     const sendFile = () => {
       
       let formData = new FormData()
       formData.append('file', dropzoneFile.value)
-
-      // class bpmnlintResult{
-      //   constructor(sid, category, message, rule){
-      //     this.sid = sid
-      //     this.category = category
-      //     this.message = message
-      //     this.rule = rule
-      //   }
-      // }
-
 
       axios.post('http://localhost:3000/fileupload', formData,{
         headers: {
@@ -64,34 +61,29 @@ export default {
         console.log(error)
       }).then(response => {
         responseData.value = response.data
-        console.log('1: ' + responseData.value)
-        responseData.value = responseData.value.replace(/\\/g, '/').replace(/\s+/g, ' ').split('sid-')
-        console.log('2: '+responseData.value)
-        responseData.value.shift()
-        console.log('3: '+responseData.value)
+        console.log('Intial response data');
+        console.log(responseData.value)
 
-        let responseDataLast = responseData.value.pop()
-        console.log('4: '+responseData.value)
+        console.log('replace backslashes and sid');
+        responseData.value = responseData.value.replace(/\\/g, '/').replace(/sid-/g,'')
+        console.log(responseData.value);
+        
+        console.log('split lines and values divided by two spaces');
+        arr.value = responseData.value.split('\n').filter(line => line).map(line => line.split(/ {2,}/g).filter(item => item))
+        console.log(responseData);
+        console.log('log arr');
+        console.log(arr.value);
 
-        let responseDataLastSplit = responseDataLast.split('✖')
-        console.log('5: '+responseData.value)
+        console.log('remove first line');
+        arr.value.shift()
+        console.log(arr.value);
 
-        responseData.value.push(responseDataLastSplit[0])
-        console.log('6: '+responseData.value);
-        let responseDataValueString = String(responseData.value)
-        responseData.value = responseDataValueString.split('\n').map(line => line.split(/ {2,}/g))
-        console.log('7 ' + responseData.value);
-
-        // var Result = ref([])
-        // let line = ''
-        // for (line in responseData.value){
-
-        // }
-        // console.log(Result)
-
+        console.log('remove last line');
+        arr.value.pop()
+        console.log(arr.value);
       })
     }
-    return{dropzoneFile, drop, selectedFile, sendFile, responseData}
+    return{dropzoneFile, drop, selectedFile, sendFile, responseData, arr, removeFile}
   }
 }
 </script>
@@ -106,7 +98,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f1f1f1;
+  background-color: #ddd;
 
   h1{
     font-size: 40px;
@@ -129,7 +121,7 @@ button{
   font-weight: bold;
   margin-top: 32px;
 }
-.results{
+.results,p{
   margin-top: 16px;
   display: flex;
   flex-direction: column;
@@ -137,5 +129,27 @@ button{
   align-items: center;
   color:crimson;
   font-weight: bold;
+  -webkit-text-stroke: 0.05px black;
+
 }
+.bpmnerror{
+  color: crimson;
+}
+.bpmnwarning{
+  color: orange;
+}
+
+label{
+    padding: 8px 12px;
+    color: white;
+    background-color: rgb(155, 216, 85);
+    transition: .3s ease all;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-top: 32px;
+  }
+  .removeFile{
+    margin-top: 10px;
+    cursor: pointer;
+  }
 </style>
