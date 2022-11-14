@@ -30,7 +30,7 @@ export default {
     let dropzoneFile = ref("")
 
     //Define Response variable and visibility toggle
-    const responseData = ref(null)
+    var responseData = ref(null)
 
     //Methods
     const drop = (e) => {
@@ -46,6 +46,15 @@ export default {
       let formData = new FormData()
       formData.append('file', dropzoneFile.value)
 
+      // class bpmnlintResult{
+      //   constructor(sid, category, message, rule){
+      //     this.sid = sid
+      //     this.category = category
+      //     this.message = message
+      //     this.rule = rule
+      //   }
+      // }
+
 
       axios.post('http://localhost:3000/fileupload', formData,{
         headers: {
@@ -55,10 +64,30 @@ export default {
         console.log(error)
       }).then(response => {
         responseData.value = response.data
-        console.log(responseData.value)
-        responseData.value = responseData.value.replace(/\\/g, '/').split('sid-')
+        console.log('1: ' + responseData.value)
+        responseData.value = responseData.value.replace(/\\/g, '/').replace(/\s+/g, ' ').split('sid-')
+        console.log('2: '+responseData.value)
         responseData.value.shift()
-        console.log(responseData.value)
+        console.log('3: '+responseData.value)
+
+        let responseDataLast = responseData.value.pop()
+        console.log('4: '+responseData.value)
+
+        let responseDataLastSplit = responseDataLast.split('✖')
+        console.log('5: '+responseData.value)
+
+        responseData.value.push(responseDataLastSplit[0])
+        console.log('6: '+responseData.value);
+        let responseDataValueString = String(responseData.value)
+        responseData.value = responseDataValueString.split('\n').map(line => line.split(/ {2,}/g))
+        console.log('7 ' + responseData.value);
+
+        // var Result = ref([])
+        // let line = ''
+        // for (line in responseData.value){
+
+        // }
+        // console.log(Result)
 
       })
     }
