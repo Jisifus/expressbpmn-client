@@ -60,8 +60,14 @@ input{
   background-color: #41b883;
 
   label{
-    background-color: white;
-    color: #41b883;
+    background-color: #41b883;
+    color: white;
+    margin: 0 10px;
+    padding: 10px;
+    border:none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
   }
 }
 

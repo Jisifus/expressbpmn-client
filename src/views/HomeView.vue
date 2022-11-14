@@ -1,13 +1,17 @@
 <template>
   <div class="home">
-    <h1>BPMN Lint Analyzer</h1>
+    <h1>BPMN Linter</h1>
     <!-- Get File from DropZone -->
     <DropZone @drop.prevent="drop" @change="selectedFile"/>
-    <span class="file-info">File:{{dropzoneFile.name}}</span>
+    <span v-if="dropzoneFile.name" class="file-info">File:{{dropzoneFile.name}}</span>
     <button @click="sendFile" >Upload File</button>
     <!-- Display Response Data (Not Working)-->
     <div v-if="responseData">
-      <p>Testing: {{responseData}}</p>
+      <ul>
+        <li v-for="item in responseData" :key="item.id" class="results">
+          {{item}}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -51,7 +55,11 @@ export default {
         console.log(error)
       }).then(response => {
         responseData.value = response.data
-        console.log(responseData);
+        console.log(responseData.value)
+        responseData.value = responseData.value.replace(/\\/g, '/').split('sid-')
+        responseData.value.shift()
+        console.log(responseData.value)
+
       })
     }
     return{dropzoneFile, drop, selectedFile, sendFile, responseData}
@@ -61,7 +69,9 @@ export default {
 
 <style lang="scss" scoped>
 .home{
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -75,12 +85,28 @@ export default {
   }
 
   .file-info{
-    margin:top 32px;
+    margin-top: 32px;
   }
 
 }
 button{
   background-color: #41b883;
   color: white;
+  margin: 0 10px;
+  padding: 10px;
+  border:none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 32px;
+}
+.results{
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color:crimson;
+  font-weight: bold;
 }
 </style>
