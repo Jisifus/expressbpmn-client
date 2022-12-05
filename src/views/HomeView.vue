@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>BPMN Linter</h1>
+    <h1>expressBPMN</h1>
     <!-- Get File from DropZone -->
     <DropZone @drop.prevent="drop" @change="selectedFile"/>
     <span v-if="dropzoneFile.name" class="file-info">File: {{dropzoneFile.name}}</span>
@@ -9,9 +9,9 @@
     <label @click="sendFile" v-if="dropzoneFile.name" >Upload File</label>
     <!-- Display Response Data (Not Working)-->
     <div v-if="responseData">
-      <div v-for="test in arr" v-bind:key="test.id" class="results">
-        <p v-if="test[1]==='error'" class="bpmnerror">❌ {{test[1].toUpperCase()}}: {{test[2]}} (At: {{test[0]}})</p>
-        <p v-if="test[1]==='warning'" class="bpmnwarning">⚠️ {{test[1].toUpperCase()}}: {{test[2]}} (At: {{test[0]}})</p>
+      <div v-for="line in arr" v-bind:key="line.id" class="results">
+        <p v-if="line[1]==='error'" class="bpmnerror">❌ {{line[1].toUpperCase()}}: {{line[2]}} (At: {{line[0]}})</p>
+        <p v-if="line[1]==='warning'" class="bpmnwarning">⚠️ {{line[1].toUpperCase()}}: {{line[2]}} (At: {{line[0]}})</p>
       </div>
     </div>
   </div>
